@@ -1,8 +1,18 @@
 // widgets/app_drawer.dart
 import 'package:flutter/material.dart';
+import 'package:map_game_flutter/core/models/route_model.dart' as route_model;
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+  final route_model.Route? currentRoute;
+  final VoidCallback onEndRoute;
+  final String? username;
+
+  const AppDrawer({
+    super.key,
+    this.currentRoute,
+    required this.onEndRoute,
+    this.username,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -11,6 +21,7 @@ class AppDrawer extends StatelessWidget {
         children: [
           _buildHeader(context),
           _buildOptionsSection(context),
+          if (currentRoute!=null) _buildCurrentRouteSection(context),
           _buildLoginSection(context),
           _buildLogoutButton(context),
         ],
@@ -31,7 +42,7 @@ class AppDrawer extends StatelessWidget {
             backgroundImage: NetworkImage('https://as1.ftcdn.net/jpg/01/12/43/90/1000_F_112439016_DkgjEftsYWLvlYtyl7gVJo1H9ik7wu1z.jpg'),
             ),
           Text(
-            'Username',
+            username ?? '[Username]',
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -49,6 +60,22 @@ class AppDrawer extends StatelessWidget {
           leading: Icon(Icons.map),
           title: Text('Map'),
           onTap: () => Navigator.of(context).pushNamed('/'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCurrentRouteSection(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          leading: Icon(Icons.directions),
+          title: Text('Current Route: ${currentRoute!.title}'),
+        ),
+        ListTile(
+          leading: Icon(Icons.stop),
+          title: Text('End Route'),
+          onTap: onEndRoute,
         ),
       ],
     );

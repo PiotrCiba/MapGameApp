@@ -7,7 +7,7 @@ const homePageTitle = 'Flutter Demo Home Page';
 const authTokenKey = 'testapi1337';
 const userKey = 'current_user';
 
-const baseUrl = 'http://localhost:3000';
+const baseUrl = 'https://mga-server.vercel.app';
 //User endpoints '/api/v1/user'
 const loginEndpoint = '/api/v1/user/login';
 const registerEndpoint = '/api/v1/user/signup';
