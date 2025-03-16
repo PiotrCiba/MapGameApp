@@ -15,6 +15,7 @@ class Point implements BaseModel, Identifiable {
   String unlockCode;
   List<Map<String, dynamic>> requirements;
   List<Map<String, dynamic>> tasks;
+  bool isCompleted = false;
 
   Point({
     required this.id,

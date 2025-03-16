@@ -42,6 +42,7 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? _currentLocation;
   Timer? _locationUpdateTimer;
   String? _username;
+  List<String> _completedPoints = [];
 
   @override
   void initState() {
@@ -49,6 +50,8 @@ class _MapScreenState extends State<MapScreen> {
     _initializeLocation();
     _loadRoutes();
     _startLocationUpdates();
+    _loadUsername();
+    _loadCompletedPoints();
   }
 
   @override
@@ -100,6 +103,7 @@ class _MapScreenState extends State<MapScreen> {
       drawer: AppDrawer(
         currentRoute: _currentRoute,
         onEndRoute: _endRoute,
+        username: _username,
       ),
       appBar: AppBar(
         title: Text('Map'),
@@ -139,7 +143,9 @@ class _MapScreenState extends State<MapScreen> {
     List<Marker> markers;
 
     if(_currentRoute != null){
-      markers = _currentRoute!.points.map((point) => 
+      markers = _currentRoute!.points
+      .where((point) => !_completedPoints.contains(point.id))
+      .map((point) => 
       Marker(
         width: 40.0,
         height: 40.0,
@@ -222,6 +228,7 @@ class _MapScreenState extends State<MapScreen> {
       builder: (context) => PointDetailsSheet(
         point: point,
         key: Key(point.id),
+        authService: widget.authService,
       )
     );
   }
@@ -244,5 +251,12 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _currentRoute = null;
     });
+  }
+  
+  Future<void> _loadCompletedPoints() async {
+    final user = await widget.authService.getCurrentUser();
+    if (user != null) {
+      _completedPoints = user.completedPoints;
+    }
   }
 }

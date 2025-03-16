@@ -1,19 +1,52 @@
 // widgets/quiz_task_widget.dart
 import 'package:flutter/material.dart';
 
-class QuizTaskWidget extends StatelessWidget {
+class QuizTaskWidget extends StatefulWidget {
   final Map<String, dynamic> task;
+  final void Function() onTaskCompleted;
 
   const QuizTaskWidget({
-    Key? key,
+    super.key,
     required this.task,
-  }) : super(key: key);
+    required this.onTaskCompleted,
+  });
+
+  @override
+  _QuizTaskWidgetState createState() => _QuizTaskWidgetState();
+}
+
+class _QuizTaskWidgetState extends State<QuizTaskWidget> {
+  String? _selectedAnswer;
+  bool _isCorrect = false;
+
+  void _submitAnswer() {
+    final content = widget.task['content'] ?? {};
+    final List<dynamic> answers = content['answers'] ?? [];
+    final int correctAnswerIndex = content['correctAnswer'] ?? -1;
+    final String correctAnswer = correctAnswerIndex >= 0 && correctAnswerIndex < answers.length
+        ? answers[correctAnswerIndex]
+        : '';
+
+    setState(() {
+      _isCorrect = _selectedAnswer == correctAnswer;
+    });
+
+    if (_isCorrect) {
+      widget.onTaskCompleted();
+    } else {
+      // show error message
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final String question = task['question'] ?? 'No question';
-    final List<dynamic> answers = task['answers'] ?? [];
-    final String correctAnswer = task['correctAnswer'] ?? '';
+    final content = widget.task['content'] ?? {};
+    final String question = content['question'] ?? 'No question';
+    final List<dynamic> answers = content['answers'] ?? [];
+    final int correctAnswerIndex = content['correctAnswer'] ?? -1;
+    final String correctAnswer = correctAnswerIndex >= 0 && correctAnswerIndex < answers.length
+        ? answers[correctAnswerIndex]
+        : '';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,12 +65,23 @@ class QuizTaskWidget extends StatelessWidget {
               title: Text(answer),
               leading: Radio<String>(
                 value: answer,
-                groupValue: correctAnswer,
+                groupValue: _selectedAnswer,
                 onChanged: (value) {
-                  // Handle answer selection
+                  setState(() {
+                    _selectedAnswer = value;
+                    _isCorrect = value == correctAnswer;
+                  });
                 },
               ),
             )),
+        if (_selectedAnswer != null)
+          Text(
+            _isCorrect ? 'Correct!' : 'Incorrect. Try again.',
+            style: TextStyle(
+              color: _isCorrect ? Colors.green : Colors.red,
+              fontSize: 16,
+            ),
+          ),
       ],
     );
   }

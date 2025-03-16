@@ -6,6 +6,7 @@ class User implements BaseModel, Identifiable {
   String id;
   String username;
   String email;
+  List<String> completedPoints = [];
 
   User({
     required this.id,
